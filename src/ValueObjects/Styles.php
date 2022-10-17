@@ -940,6 +940,19 @@ final class Styles
         return constant(Color::class."::$colorConstant");
     }
 
+    public function hover($method, ...$arguments)
+    {
+        [$y, $x] = $this->element->mouse;
+
+        if ($y === '5' && (
+            ($x > 19 && $x < 32)
+        )) {
+            return $this->{$method}(...$arguments);
+        }
+
+        return $this;
+    }
+
     /**
      * Calculates the width based on the fraction provided.
      *

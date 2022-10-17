@@ -2,58 +2,32 @@
 
 require_once __DIR__.'/vendor/autoload.php';
 
-use function Termwind\{render, live, select};
+use function Termwind\{live, terminal};
 
-render(<<<HTML
-    <div class="mx-2 my-1 px-2 bg-blue text-black">
-        Who is the author of <b>Laravel</b>?
-    </div>
-HTML);
+$times = 0;
 
-$options = [[
-    'value' => '@enunomaduro',
-    'label' => 'Nuno Maduro',
-], [
-    'value' => '@calebporzio',
-    'label' => 'Caleb Porzio',
-], [
-    'value' => '@taylorotwell',
-    'label' => 'Taylor Otwell',
-], [
-    'value' => '@adamwathan',
-    'label' => 'Adam Wathan',
-]];
-
-$select = select(function ($options, $active) {
-    $html = '';
-
-    foreach ($options as $option) {
-        if ($active['value'] === $option['value']) {
-            $html .= '<div><b class="text-green">✔</b> ' . $option['label'] . ' - ' . date('i:s') . '</div>';
-        } else {
-            $html .= '<div>- ' . $option['label'] . ' - ' . date('i:s') . '</div>';
-        }
+live(function ($refresh, $mouse, $click) use (&$times) {
+    if ($click) {
+        $times++;
     }
 
-    return "<div class='mx-2'>$html</div>";
-}, $options);
-
-$time = microtime(true);
-$select->shouldRefreshIf(function () use (&$time) {
-    if ((microtime(true) - $time) > 1) {
-        $time = microtime(true);
-        return true;
-    }
-
-    return false;
-});
-
-$select->render();
-
-if ($select->getActive()['value'] === '@taylorotwell') {
-    render(<<<HTML
-        <div class="my-1 mx-2 px-2 bg-green text-black">
-            🎂 That's correct <i>@taylorotwell</i> is the author of <b>Laravel</b>!
+    return <<<HTML
+        <div class="mx-2 my-1 space-y-1 max-w-80">
+            <div class="font-bold text-black bg-green-500 px-1 w-full text-center">
+                What if I tell you you can detect <u>hover</u> and <u>click</u> events?
+            </div>
+            <div class="flex justify-evenly font-bold">
+                <span class="bg-blue-300 text-black hover:bg-blue-600 px-2">
+                    <span class="hover:underline">hover me!</span>
+                </span>
+                <span
+                    class="bg-purple-300 text-black px-2"
+                    @click="$times++"
+                >
+                    click me!
+                </span>
+            </div>
+            <div class="w-full text-center">You clicked me <b>{$times}</b> times!</div>
         </div>
-    HTML);
-}
+    HTML;
+})->refreshEvery(seconds: 1);

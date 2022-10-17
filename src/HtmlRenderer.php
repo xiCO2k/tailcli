@@ -27,7 +27,7 @@ final class HtmlRenderer
     /**
      * Parses the given html.
      */
-    public function parse(string $html): Components\Element
+    public function parse(string $html, array $mouse = [0, 0]): Components\Element
     {
         $dom = new DOMDocument();
 
@@ -40,7 +40,7 @@ final class HtmlRenderer
 
         /** @var DOMNode $body */
         $body = $dom->getElementsByTagName('body')->item(0);
-        $el = $this->convert(new Node($body));
+        $el = $this->convert(new Node($body), $mouse);
 
         // @codeCoverageIgnoreStart
         return is_string($el)
@@ -52,7 +52,7 @@ final class HtmlRenderer
     /**
      * Convert a tree of DOM nodes to a tree of termwind elements.
      */
-    private function convert(Node $node): Components\Element|string
+    private function convert(Node $node, array $mouse): Components\Element|string
     {
         $children = [];
 
@@ -65,12 +65,12 @@ final class HtmlRenderer
         }
 
         foreach ($node->getChildNodes() as $child) {
-            $children[] = $this->convert($child);
+            $children[] = $this->convert($child, $mouse);
         }
 
         $children = array_filter($children, fn ($child) => $child !== '');
 
-        return $this->toElement($node, $children);
+        return $this->toElement($node, $children, $mouse);
     }
 
     /**
@@ -78,7 +78,7 @@ final class HtmlRenderer
      *
      * @param  array<int, Components\Element|string>  $children
      */
-    private function toElement(Node $node, array $children): Components\Element|string
+    private function toElement(Node $node, array $children, array $mouse): Components\Element|string
     {
         if ($node->isText() || $node->isComment()) {
             return (string) $node;
@@ -93,24 +93,24 @@ final class HtmlRenderer
 
         return match ($node->getName()) {
             'body' => $children[0], // Pick only the first element from the body node
-            'div' => Termwind::div($children, $styles, $properties),
-            'p' => Termwind::paragraph($children, $styles, $properties),
-            'ul' => Termwind::ul($children, $styles, $properties),
-            'ol' => Termwind::ol($children, $styles, $properties),
-            'li' => Termwind::li($children, $styles, $properties),
-            'dl' => Termwind::dl($children, $styles, $properties),
-            'dt' => Termwind::dt($children, $styles, $properties),
-            'dd' => Termwind::dd($children, $styles, $properties),
-            'span' => Termwind::span($children, $styles, $properties),
-            'br' => Termwind::breakLine($styles, $properties),
-            'strong' => Termwind::span($children, $styles, $properties)->strong(),
-            'b' => Termwind::span($children, $styles, $properties)->fontBold(),
-            'em', 'i' => Termwind::span($children, $styles, $properties)->italic(),
-            'u' => Termwind::span($children, $styles, $properties)->underline(),
-            's' => Termwind::span($children, $styles, $properties)->lineThrough(),
-            'a' => Termwind::anchor($children, $styles, $properties)->href($node->getAttribute('href')),
-            'hr' => Termwind::hr($styles, $properties),
-            default => Termwind::div($children, $styles, $properties),
+            'div' => Termwind::div($children, $styles, $properties, $mouse),
+            'p' => Termwind::paragraph($children, $styles, $properties, $mouse),
+            'ul' => Termwind::ul($children, $styles, $properties, $mouse),
+            'ol' => Termwind::ol($children, $styles, $properties, $mouse),
+            'li' => Termwind::li($children, $styles, $properties, $mouse),
+            'dl' => Termwind::dl($children, $styles, $properties, $mouse),
+            'dt' => Termwind::dt($children, $styles, $properties, $mouse),
+            'dd' => Termwind::dd($children, $styles, $properties, $mouse),
+            'span' => Termwind::span($children, $styles, $properties, $mouse),
+            'br' => Termwind::breakLine($styles, $properties, $mouse),
+            'strong' => Termwind::span($children, $styles, $properties, $mouse)->strong(),
+            'b' => Termwind::span($children, $styles, $properties, $mouse)->fontBold(),
+            'em', 'i' => Termwind::span($children, $styles, $properties, $mouse)->italic(),
+            'u' => Termwind::span($children, $styles, $properties, $mouse)->underline(),
+            's' => Termwind::span($children, $styles, $properties, $mouse)->lineThrough(),
+            'a' => Termwind::anchor($children, $styles, $properties, $mouse)->href($node->getAttribute('href')),
+            'hr' => Termwind::hr($styles, $properties, $mouse),
+            default => Termwind::div($children, $styles, $properties, $mouse),
         };
     }
 }

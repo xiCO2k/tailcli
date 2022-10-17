@@ -39,9 +39,12 @@ abstract class Element
     final public function __construct(
         protected OutputInterface $output,
         protected array|string $content,
-        Styles|null $styles = null
+        Styles|null $styles = null,
+        public array $mouse = [1, 2]
     ) {
-        $this->styles = $styles ?? new Styles(defaultStyles: static::$defaultStyles);
+        $this->styles = $styles ?? new Styles(
+            defaultStyles: static::$defaultStyles,
+        );
         $this->styles->setElement($this);
     }
 
@@ -51,16 +54,16 @@ abstract class Element
      * @param  array<int, Element|string>|string  $content
      * @param  array<string, mixed>  $properties
      */
-    final public static function fromStyles(OutputInterface $output, array|string $content, string $styles = '', array $properties = []): static
+    final public static function fromStyles(OutputInterface $output, array|string $content, string $styles = '', array $properties = [], array $mouse = []): static
     {
-        $element = new static($output, $content);
+        $element = new static($output, $content, mouse: $mouse);
         if ($properties !== []) {
             $element->styles->setProperties($properties);
         }
 
         $elementStyles = StyleToMethod::multiple($element->styles, $styles);
 
-        return new static($output, $content, $elementStyles);
+        return new static($output, $content, $elementStyles, $mouse);
     }
 
     /**

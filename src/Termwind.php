@@ -34,12 +34,12 @@ final class Termwind
      * @param  array<int, Element|string>|string  $content
      * @param  array<string, mixed>  $properties
      */
-    public static function div(array|string $content = '', string $styles = '', array $properties = []): Components\Div
+    public static function div(array|string $content = '', string $styles = '', array $properties = [], array $mouse = []): Components\Div
     {
         $content = self::prepareElements($content, $styles);
 
         return Components\Div::fromStyles(
-            self::getRenderer(), $content, $styles, $properties
+            self::getRenderer(), $content, $styles, $properties, $mouse
         );
     }
 
@@ -64,12 +64,12 @@ final class Termwind
      * @param  array<int, Element|string>|string  $content
      * @param  array<string, mixed>  $properties
      */
-    public static function span(array|string $content = '', string $styles = '', array $properties = []): Components\Span
+    public static function span(array|string $content = '', string $styles = '', array $properties = [], array $mouse = []): Components\Span
     {
         $content = self::prepareElements($content, $styles);
 
         return Components\Span::fromStyles(
-            self::getRenderer(), $content, $styles, $properties
+            self::getRenderer(), $content, $styles, $properties, $mouse
         );
     }
 

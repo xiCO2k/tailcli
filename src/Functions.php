@@ -79,7 +79,7 @@ if (! function_exists('live')) {
             );
         }
 
-        $live = new Live(terminal(), $output->section(), new HtmlRenderer(), $htmlResolver);
+        $live = new Live(terminal(), $output, new HtmlRenderer(), $htmlResolver);
 
         $live->render();
 

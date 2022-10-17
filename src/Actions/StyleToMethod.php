@@ -75,7 +75,7 @@ final class StyleToMethod
         }
 
         $method = array_filter(
-            (array) preg_split('/(?![^\[]*\])-/', $method),
+            (array) preg_split('/(?![^\[]*\])[-:]/', $method),
             fn ($item) => $item !== false
         );
 
